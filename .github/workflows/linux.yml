@@ -19,6 +19,9 @@ concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 env:
   DOC_ROOT: ${{ github.workspace }}/ACE_TAO
   ACE_ROOT: ${{ github.workspace }}/ACE_TAO/ACE
@@ -37,11 +40,6 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-18.04
-            CC: gcc-4.8
-            CXX: g++-4.8
-            ruby: '2.4'
-            PackageDeps: g++-4.8
           - os: ubuntu-18.04
             CC: gcc-6
             CXX: g++-6
@@ -78,46 +76,46 @@ jobs:
       CC: ${{ matrix.CC }}
       CXX: ${{ matrix.CXX }}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: checkout ACE_TAO
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: DOCGroup/ACE_TAO
         path: ${{ env.DOC_ROOT }}
     - name: checkout MPC
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: DOCGroup/MPC
         path: ${{ env.MPC_ROOT }}
     - name: checkout ridl
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: RemedyIT/ridl
         path: ${{ env.RIDL_ROOT }}
     - name: checkout taox11
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: RemedyIT/taox11
         path: ${{ env.TAOX11_ROOT }}
     - name: checkout ciaox11
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: RemedyIT/ciaox11
         path: ${{ env.CIAOX11_ROOT }}
     - name: checkout dancex11
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: RemedyIT/dancex11
         path: ${{ env.DANCEX11_ROOT }}
     - name: checkout OpenDDS
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: objectcomputing/OpenDDS
         path: ${{ env.DDS_ROOT }}
     - uses: ruby/setup-ruby@v1
       with:
         ruby-version: ${{ matrix.ruby }}
-    - name: Add repository $Repo
+    - name: Add repository ${{ matrix.Repo }}
       if: matrix.Repo != ''
       run:
         wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key|sudo apt-key add -
@@ -151,7 +149,7 @@ jobs:
         files: "docs/html/taox11/getting_started.html"
     - name: File exists
       if: steps.check_files.outputs.files_exists == 'false'
-      uses: actions/github-script@v5
+      uses: actions/github-script@v6
       with:
         script: |
           core.setFailed('Documentation not generated')
