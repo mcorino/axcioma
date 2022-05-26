@@ -97,7 +97,6 @@ configure :acetao do
   end
 
   features do
-    enable 'c++17'
     enable :cross do
       depends_on :crossbuild
     end
